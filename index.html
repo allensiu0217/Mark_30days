@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>馬可福音 30 天靈修旅程</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        h1, h2, h3, .serif {
+            font-family: 'Noto Serif TC', serif;
+        }
+        .story-content {
+            line-height: 1.8;
+            text-align: justify;
+        }
+        /* Highlight style for key verse */
+        .highlight-verse {
+            background-color: #dcfce7; /* green-100 */
+            color: #166534; /* green-800 */
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 4px;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+        }
+        /* Hide scrollbar for sidebar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .active-day {
+            background-color: #d1fae5;
+            border-left: 4px solid #059669;
+            color: #065f46;
+            font-weight: bold;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col md:flex-row overflow-hidden text-gray-800">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-white shadow-md p-4 flex justify-between items-center z-20">
+        <h1 class="text-xl font-bold text-green-800">馬可福音靈修</h1>
+        <button id="menuBtn" class="text-gray-600 focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Sidebar (Day List) -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 md:w-1/4 lg:w-1/5 bg-white border-r border-gray-200 shadow-lg md:shadow-none transition-transform duration-300 ease-in-out z-10 flex flex-col">
+        <div class="p-6 border-b border-gray-100 hidden md:block">
+            <h1 class="text-2xl font-bold text-green-800 serif">與主同行</h1>
+            <p class="text-sm text-gray-500 mt-1">馬可福音 30 天靈修</p>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto no-scrollbar p-2" id="dayList">
+            <!-- JavaScript will populate this -->
+        </div>
+
+        <div class="p-4 border-t border-gray-100 bg-gray-50 text-center text-xs text-gray-400">
+            天天查考聖經，明白這道是與不是
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative w-full" id="mainContentArea">
+        <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-0 hidden md:hidden"></div>
+
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 scroll-smooth" id="contentContainer">
+            <div id="devotionalContent" class="max-w-3xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10 fade-in">
+                <!-- JavaScript will populate this -->
+            </div>
+            
+            <!-- Navigation Buttons -->
+            <div class="max-w-3xl mx-auto flex justify-between mt-8 px-2 pb-8">
+                <button id="prevBtn" class="px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 flex items-center gap-2 transition">
+                    ← 上一天
+                </button>
+                <button id="nextBtn" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 shadow-sm transition">
+                    下一天 →
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 30 Days of Devotional Data
+        const devotionals = [
+            {
+                day: 1,
+                title: "預備主的道",
+                scripture_range: "馬可福音 1:1-4",
+                scripture_text: "神的兒子，耶穌基督福音的起頭。正如先知以賽亞書上記著說：看哪，我要差遣我的使者在你前面，預備道路。<span class='highlight-verse'>「在曠野有人聲喊著說：預備主的道，修直他的路。」</span>照這話，約翰來了，在曠野施洗，傳悔改的洗禮，使罪得赦。",
+                story: "古代國王出巡前，必有先鋒將坑洞填平、彎路修直。施洗約翰就是那位先鋒，他不求住在皇宮，只在曠野呼喊，單單為了預備人心迎接救主。我們的心若充滿驕傲（高山）或自卑（低谷），主便難以掌權。今天，讓我們進行一場心靈大掃除。",
+                reflection: [
+                    "在你的生活中，有什麼「雜物」或「罪」攔阻了你與神的關係？",
+                    "你願意如何具體地「預備」你的心來迎接主？"
+                ],
+                prayer: "主啊，求祢光照我的心，除去一切驕傲與攔阻，讓我預備好自己，單單迎接祢的榮耀與同在。阿們。"
+            },
+            {
+                day: 2,
+                title: "祢是我的愛子",
+                scripture_range: "馬可福音 1:9-11",
+                scripture_text: "那時，耶穌從加利利的拿撒勒來，在約旦河裡受了約翰的洗。他從水裡一上來，就看見天裂開了，聖靈彷彿鴿子，降在他身上。<span class='highlight-verse'>「又有聲音從天上來，說：祢是我的愛子，我喜悅祢。」</span>",
+                story: "耶穌受洗時，還未行任何神蹟或開始傳道，父神卻已確認祂的身份與喜悅。這表明神的愛不是基於我們「做」了什麼，而是因為我們「是」誰。我們不需要靠完美的表現來換取神的愛，這份無條件的接納，是我們生命最穩固的根基。",
+                reflection: [
+                    "你是否常覺得必須「表現好」才能被神或人接納？",
+                    "試著默想天父對你說：「你是我的孩子，我喜悅你。」這對你現在的心情有什麼影響？"
+                ],
+                prayer: "親愛的天父，感謝祢接納我成為祢的兒女。在我不完美時，祢依然愛我。求祢讓我活在祢的愛中，不再恐懼。阿們。"
+            },
+            {
+                day: 3,
+                title: "捨棄與跟隨",
+                scripture_range: "馬可福音 1:16-18",
+                scripture_text: "耶穌順著加利利的海邊走，看見西門和西門的兄弟安得烈在海裡撒網；他們本是打魚的。耶穌對他們說：「來跟從我，我要叫你們得人如得魚一樣。」<span class='highlight-verse'>「他們就立刻捨了網，跟從了祂。」</span>",
+                story: "「網」是漁夫謀生的工具與安全感。當耶穌呼召時，他們「立刻」捨了網。跟隨耶穌往往意味著某種形式的「捨棄」。若我們雙手緊抓著破舊的漁網（掌控、習慣、舒適圈），就無法騰出手來承接神要賜下的豐盛生命與偉大呼召。",
+                reflection: [
+                    "現階段有什麼「網」是你緊抓不放，阻礙你全心跟隨主的？",
+                    "「得人如得魚」對你現在的生活有什麼意義？"
+                ],
+                prayer: "主耶穌，求祢讓我看見我手中緊抓不放的網是什麼。賜我勇氣放下它，專心跟隨祢，得著永恆的價值。阿們。"
+            },
+            {
+                day: 4,
+                title: "清晨的禱告",
+                scripture_range: "馬可福音 1:35-37",
+                scripture_text: "<span class='highlight-verse'>「次日早晨，天未亮的時候，耶穌起來，到曠野地方去，在那裡禱告。」</span>西門和同伴追了他去，遇見了就對他說：「眾人都找你。」",
+                story: "前一天耶穌極其忙碌，但祂知道力量的源頭在於親近父神。越是忙碌，祂越是刻意獨處禱告。現代人常說「太忙沒時間禱告」，但耶穌的榜樣告訴我們：禱告不是待辦事項的最後一項，而是開啟一天的鑰匙。沒有充電的靈魂，無法勝過世界的拉扯。",
+                reflection: [
+                    "檢視你一天的時間表，你把「親近神」放在什麼順位？",
+                    "你可以如何調整作息，為神留出一段不被干擾的時間？"
+                ],
+                prayer: "主啊，求祢幫助我重整優先次序，在忙碌中仍渴慕與祢獨處，從祢那裡支取面對今天的力量與智慧。阿們。"
+            },
+            {
+                day: 5,
+                title: "信心的行動",
+                scripture_range: "馬可福音 2:3-5",
+                scripture_text: "有人帶著一個癱子來見耶穌，是用四個人抬來的。因為人多，不得近前，就把耶穌所在的房子，拆了房頂……<span class='highlight-verse'>「耶穌見他們的信心，就對癱子說：小子，你的罪赦了。」</span>",
+                story: "這四個朋友為了幫助癱子，不計代價拆了房頂。耶穌看見的不是癱子的信心，而是「他們」的信心。有時候，我們需要成為那「拆房頂」的朋友，憑著信心與行動，將軟弱的人帶到耶穌面前。真正的信心不只是言語，而是具體的愛與行動。",
+                reflection: [
+                    "你身邊是否有靈性癱瘓或需要幫助的人？你可以為他做什麼具體的行動？",
+                    "當你軟弱時，你是否有屬靈夥伴可以扶持你？"
+                ],
+                prayer: "主啊，求賜我屬靈夥伴，也讓我成為別人的扶持。當我看見人的需要時，願我有拆房頂般的信心與行動。阿們。"
+            },
+            {
+                day: 6,
+                title: "召罪人",
+                scripture_range: "馬可福音 2:15-17",
+                scripture_text: "法利賽人看見耶穌和罪人並稅吏一同吃飯……耶穌聽見，就對他們說：<span class='highlight-verse'>「康健的人用不著醫生，有病的人才用得著。我來本不是召義人，乃是召罪人。」</span>",
+                story: "利未是被人唾棄的稅吏，耶穌卻去他家吃飯。教會不是展示完美的博物館，而是醫治生命的醫院。承認自己有病，是得醫治的第一步。耶穌不介意你的過去與汙點，祂只在乎你是否願意讓祂這位大醫生介入，修復你的生命。",
+                reflection: [
+                    "你是否曾因自覺不配而不敢親近神？",
+                    "在教會中，我們是否像耶穌一樣接納那些「不完美」的人？"
+                ],
+                prayer: "主耶穌，我是需要祢的病人。感謝祢沒有嫌棄我的罪污，反而以此為念來醫治我。求祢潔淨我，使我痊癒。阿們。"
+            },
+            {
+                day: 7,
+                title: "安息的真義",
+                scripture_range: "馬可福音 2:27-28",
+                scripture_text: "又對他們說：<span class='highlight-verse'>「安息日是為人設立的，人不是為安息日設立的。」</span>所以人子也是安息日的主。",
+                story: "法利賽人將安息日變成沈重的規條，耶穌卻點出：安息日是神給人的禮物。如果我們連一週一天停下來休息、專注於神都做不到，我們已淪為工作的奴隸。真正的安息是從「靠自己抓取」的焦慮中釋放，信靠神的供應。停下來，是為了走更遠的路。",
+                reflection: [
+                    "你的「安息日」是充滿規條的重擔，還是身心靈恢復的禮物？",
+                    "這週你可以如何具體地實踐「安息」，將重擔交託給神？"
+                ],
+                prayer: "主啊，教導我如何享受安息。救我脫離忙碌的綑綁，在祢裡面得著身心靈的恢復，重新得力。阿們。"
+            },
+            {
+                day: 8,
+                title: "設立十二人",
+                scripture_range: "馬可福音 3:13-15",
+                scripture_text: "耶穌上了山，隨自己的意思叫人來；他們便來到他那裡。<span class='highlight-verse'>「祂就設立十二個人，要他們常和自己同在，也要差他們去傳道。」</span>",
+                story: "耶穌揀選門徒有兩個目的，首要是「常和自己同在」，其次才是「差他們去傳道」。我們常忙於為神「工作」，卻忽略了與神「關係」。沒有充電的手機撐不了一天，沒有主的同在，服事只會枯乾。先有親密的關係，工作自然會成為生命滿溢的流露。",
+                reflection: [
+                    "檢視你的服事與生活，是「工作」多於「親近」，還是兩者平衡？",
+                    "你如何能在日常生活中操練「與主同在」？"
+                ],
+                prayer: "主啊，提醒我「同在」比「作工」更重要。願我每天先花時間親近祢，讓我的服事成為與祢同行的自然流露。阿們。"
+            },
+            {
+                day: 9,
+                title: "心田的土壤",
+                scripture_range: "馬可福音 4:18-20",
+                scripture_text: "還有撒在荊棘裡的，就是人聽了道，後來有世上的思慮、錢財的迷惑……就把道擠住了。<span class='highlight-verse'>「那撒在好地上的，就是人聽道，又領受，並且結實，有三十倍的，有六十倍的，有一百倍的。」</span>",
+                story: "種子是一樣的（神的道），結果不同在於土壤（人的心）。「思慮」和「錢財」常像荊棘，悄悄擠住神的道。我們的心需要常常耕耘、除草（認罪、感恩）。保持心的柔軟與單純，神的道一旦落入，就能在生命中產生驚人的爆發力。",
+                reflection: [
+                    "最近你的心田裡長了什麼「荊棘」（憂慮、貪念）？",
+                    "你要如何為心田「除草」，好讓神的話語結出果實？"
+                ],
+                prayer: "神啊，求祢除去我心中的荊棘與石頭，賜我一顆柔軟順服的心，領受祢的話語，並結出豐盛的果實。阿們。"
+            },
+            {
+                day: 10,
+                title: "風浪中的平安",
+                scripture_range: "馬可福音 4:38-40",
+                scripture_text: "耶穌在船尾上，枕著枕頭睡覺……<span class='highlight-verse'>「耶穌醒了，斥責風，向海說：住了吧！靜了吧！風就止住，大大的平靜了。」</span>",
+                story: "風暴來襲，門徒看環境而驚慌，耶穌因掌權而安睡。信心的關鍵不是「沒有風浪」，而是「誰在船上」。如果萬王之王在你生命的船上，即使外在狂風暴雨，內心依然可以有出人意外的平安。祂一聲斥責，風浪就必止息。",
+                reflection: [
+                    "你現在正面臨什麼人生的風浪？",
+                    "確認耶穌是否在你的船上？你願意將掌控權交給祂嗎？"
+                ],
+                prayer: "主耶穌，當人生的風暴來襲，求祢提醒我，祢就在我的船上。我要信靠祢的掌權，在風浪中經歷祢的平安。阿們。"
+            },
+            {
+                day: 11,
+                title: "只要信",
+                scripture_range: "馬可福音 5:35-36",
+                scripture_text: "還說話的時候，有人從管會堂的家裡來，說：「你的女兒死了，何必還勞動先生呢？」<span class='highlight-verse'>「耶穌聽見所說的話，就對管會堂的說：不要怕，只要信！」</span>",
+                story: "面對女兒已死的絕望消息，人的盡頭往往是神的起頭。耶穌無視壞消息，只對父親說六個字：「不要怕，只要信。」信心就是拒絕讓恐懼做決定，選擇讓神的話語做決定。不管環境多麼無可救藥，把眼光轉向耶穌，祂能使死人復活。",
+                reflection: [
+                    "當壞消息來臨時，你的第一個反應是恐懼還是轉向神？",
+                    "在看似絕望的處境中，你如何操練「不要怕，只要信」？"
+                ],
+                prayer: "主啊，當壞消息接踵而來，求祢保守我的心不被恐懼吞噬。我要單單仰望祢，相信在祢沒有難成的事。阿們。"
+            },
+            {
+                day: 12,
+                title: "不要帶食物",
+                scripture_range: "馬可福音 6:7-9",
+                scripture_text: "耶穌叫了十二個門徒來，差遣他們兩個兩個的出去，也賜給他們權柄制伏污鬼；<span class='highlight-verse'>「吩咐他們：行路的時候不要帶食物和口袋，腰袋裡也不要帶錢。」</span>",
+                story: "耶穌差遣門徒卻禁止他們帶過多物資，這是為了訓練他們「倚靠供應者」而非「倚靠供應」。神有時會把我們置於資源缺乏的境地，是要讓我們經歷祂信實的供應。當你覺得自己「不夠」時，正是神彰顯大能的時刻。帶著權柄出去吧，神負責你的後勤。",
+                reflection: [
+                    "你是否過度依賴存款或資源，而忽略了倚靠神？",
+                    "回想一次神在缺乏中供應你的經歷，並為此獻上感恩。"
+                ],
+                prayer: "耶和華以勒的神，我願學習信靠祢的供應。即使在缺乏中，我也要憑信心前行，因為差遣我的主必負責到底。阿們。"
+            },
+            {
+                day: 13,
+                title: "五餅二魚的奉獻",
+                scripture_range: "馬可福音 6:37-38",
+                scripture_text: "耶穌回答說：「你們給他們吃吧！」……<span class='highlight-verse'>「耶穌說：你們有多少餅，去看看。他們知道了，就說：五個餅，兩條魚。」</span>",
+                story: "面對五千人的飢餓，門徒只有微不足道的五餅二魚。但耶穌拿起這微小的奉獻，望天祝福，擘開，就餵飽了所有人。神蹟的關鍵在於：你願意把手中僅有的交給主嗎？不要輕看你微小的才幹或金錢，只要交在主手中，經過祝福與擘開，就是神蹟的種子。",
+                reflection: [
+                    "你覺得自己擁有的很少嗎？你是否願意將這「一點點」交給主？",
+                    "你可以在哪方面成為別人的供應和祝福？"
+                ],
+                prayer: "主啊，我所有的雖微不足道，但我願全數獻上。求祢使用我這五餅二魚，擘開、祝福，成為眾人的幫助。阿們。"
+            },
+            {
+                day: 14,
+                title: "是我，不要怕",
+                scripture_range: "馬可福音 6:48-50",
+                scripture_text: "看見門徒因風不順，搖櫓甚苦……耶穌往他們那裡去……<span class='highlight-verse'>「因為他們都看見了祂，且甚驚慌。耶穌連忙對他們說：你們放心！是我，不要怕！」</span>",
+                story: "在門徒「搖櫓甚苦」、最黑暗的四更天，耶穌踏著風浪而來。當我們在逆境中筋疲力盡時，神並沒有遠離。祂往往在意想不到的時間出現。請側耳聽那熟悉的聲音：「是我（I AM）。」那位掌管萬有的主，正走向你，要接管你的困境。",
+                reflection: [
+                    "你現在是否感到「搖櫓甚苦」？你相信主看見你的苦情嗎？",
+                    "試著在禱告中安靜，聆聽主對你說：「是我，不要怕。」"
+                ],
+                prayer: "主啊，在我人生的黑夜與逆風中，求祢開我的眼，讓我看見祢正走向我；開我的耳，聽見祢說「是我，不要怕」。阿們。"
+            },
+            {
+                day: 15,
+                title: "心裡的污穢",
+                scripture_range: "馬可福音 7:20-23",
+                scripture_text: "又說：從人裡面出來的，那才能污穢人。<span class='highlight-verse'>「因為從裡面，就是從人心裡，發出惡念、苟合、偷盜、凶殺……這一切的惡都是從裡面出來，且能污穢人。」</span>",
+                story: "耶穌直指核心：真正的骯髒不是手上的灰塵，而是心裡的惡念。我們可以外表穿得整齊、言語屬靈，但內心可能充滿嫉妒或貪婪。解決問題不能只做表面功夫，必須從「心」開始。求聖靈的光照亮心靈的隱密處，因為神所要的祭，是憂傷痛悔的心。",
+                reflection: [
+                    "最近你的內心是否有不為人知的惡念或態度需要對付？",
+                    "你花在「修飾外表」和「潔淨內心」的時間比例如何？"
+                ],
+                prayer: "主啊，鑒察我的心，試煉我的意念。若我有什麼惡行，求祢潔淨我，引導我走在永生的道路上，使我不做假冒為善的人。阿們。"
+            },
+            {
+                day: 16,
+                title: "漸漸看清楚",
+                scripture_range: "馬可福音 8:23-25",
+                scripture_text: "耶穌按手在他身上……他說：我看見人了，他們好像樹木，並且行走。<span class='highlight-verse'>「隨後又按手在他眼睛上，他定睛一看，就復了原，樣樣都看得清楚了。」</span>",
+                story: "這是耶穌唯一一次分階段醫治人，反映了屬靈成長的過程。我們對真理的認識往往是「漸漸」清晰的。剛開始可能模糊，但只要持續留在耶穌面前，讓祂繼續觸摸，視力就會復原。不要因現在還看不清而灰心，關鍵是你是否願意讓主再次按手在你身上。",
+                reflection: [
+                    "你對神的心意是否有看不清楚的時候？",
+                    "你願意求主再次「按手」在你身上，使你的屬靈眼光更清晰嗎？"
+                ],
+                prayer: "主啊，求祢再次按手在我的屬靈眼睛上。我不願只停留在模糊的看見，我要真知道祢，清晰地看見祢的旨意。阿們。"
+            },
+            {
+                day: 17,
+                title: "你是基督",
+                scripture_range: "馬可福音 8:27-29",
+                scripture_text: "耶穌問門徒說：人說我是誰？……<span class='highlight-verse'>「又問他們說：你們說我是誰？彼得回答說：祢是基督。」</span>",
+                story: "「你們說我是誰？」這是信仰的核心問題。別人的答案（先知、偉人）不能成為你的信仰根基。你必須自己遇見祂，宣告祂是你生命的救主（基督）。這個宣告將決定你生命的軌跡。如果祂是君王，你就必須將生命的主權交給祂。",
+                reflection: [
+                    "對你個人而言，耶穌是誰？是急救箱、顧問，還是生命的主？",
+                    "你今天願意在哪件事上，尊主為大，讓祂掌權？"
+                ],
+                prayer: "主耶穌，祢不僅是歷史上的偉人，祢是我生命的救主與君王。我願在今天再次宣告：祢是基督，是我生命的主。阿們。"
+            },
+            {
+                day: 18,
+                title: "背十字架的代價",
+                scripture_range: "馬可福音 8:34-35",
+                scripture_text: "於是叫眾人和門徒來，對他們說：<span class='highlight-verse'>「若有人要跟從我，就當捨己，背起他的十字架來跟從我。」</span>因為凡要救自己生命的，必喪掉生命……",
+                story: "跟隨耶穌的條件是「捨己」。十字架意味著向著老我死，為了神的旨意，放下自己的權利與計畫。這條路看似損失，卻是通往真正生命的唯一道路。現代信仰常求福氣卻避談代價，但唯有放下自己，才能得著基督豐盛的生命。",
+                reflection: [
+                    "什麼是你目前最難「捨棄」的權利或堅持？",
+                    "背起十字架跟隨主，對你今天的具體意義是什麼？"
+                ],
+                prayer: "主啊，賜我捨己的勇氣。我不願只求舒適的信仰，我願背起我的十字架，放下自己的權利，以此來跟隨祢的腳蹤。阿們。"
+            },
+            {
+                day: 19,
+                title: "只見耶穌",
+                scripture_range: "馬可福音 9:7-8",
+                scripture_text: "有一朵雲彩來遮蓋他們；也有聲音從雲彩裡出來，說：這是我的愛子，你們要聽他。<span class='highlight-verse'>「門徒忽然周圍一看，不再見一人，只見耶穌同他們在那裡。」</span>",
+                story: "在變像山上，偉大的摩西與以利亞顯現，但最終他們都消失了，只剩下耶穌。信仰歷程中，我們常高舉偉人、教義或特殊經歷，但這些都只是指路牌。屬靈的高峰經驗終會過去，唯有「只見耶穌」，才能讓我們在平凡的日子裡穩行高處。",
+                reflection: [
+                    "你的目光是否被某些人、事、物轉移，而沒有單單定睛在耶穌身上？",
+                    "在平凡平淡的日子裡，如何操練「只見耶穌」？"
+                ],
+                prayer: "主啊，幫助我的眼目不被任何人事物轉移。在高峰或低谷，讓我單單看見祢，聽從祢，因為祢才是萬有的中心。阿們。"
+            },
+            {
+                day: 20,
+                title: "我信不足",
+                scripture_range: "馬可福音 9:23-24",
+                scripture_text: "耶穌對他說：你若能信，在信的人，凡事都能。<span class='highlight-verse'>「孩子的父親立時喊著說：我信！但我信不足，求主幫助。」</span>",
+                story: "這位父親誠實地喊出：「我信！但我信不足。」神不需要我們偽裝成信心巨人。祂接納我們的軟弱。信心不是一種感覺，而是一種選擇——在懷疑的時候，依然選擇轉向神求助。把你的「不信」帶到主面前，祂必補足你的欠缺。",
+                reflection: [
+                    "你是否曾在禱告中誠實地向神承認你的小信？",
+                    "今天，試著用這句話禱告：「主啊，我信，但我信不足，求主幫助。」"
+                ],
+                prayer: "主啊，我承認我有時充滿懷疑與軟弱。求祢不要看我的小信，而是看見我願意的，加添我的信心，幫助我跨越障礙。阿們。"
+            },
+            {
+                day: 21,
+                title: "像小孩子",
+                scripture_range: "馬可福音 10:14-15",
+                scripture_text: "耶穌……對他們說：讓小孩子到我這裡來，不要禁止他們……<span class='highlight-verse'>「我實在告訴你們，凡要承受神國的，若不像小孩子，斷不能進去。」</span>",
+                story: "小孩子的特質是單純、依賴。成人的世界充滿計算與防衛，但在天國裡這都是累贅。神要我們回轉成孩子的樣式，承認自己無力掌控生命，單純地信靠天父的愛。越是依賴神，在天國裡就越是強壯。",
+                reflection: [
+                    "你的信仰生活是否變得太複雜、太世故？",
+                    "你如何能重拾像孩子般單純倚靠天父的心？"
+                ],
+                prayer: "阿爸父，求祢除去我的世故與驕傲，賜我一顆像孩子般單純倚靠祢的心。讓我天天在祢懷中，享受作神兒女的平安。阿們。"
+            },
+            {
+                day: 22,
+                title: "還缺少一件",
+                scripture_range: "馬可福音 10:21-22",
+                scripture_text: "<span class='highlight-verse'>「耶穌看著他，就愛他，對他說：你還缺少一件：去變賣你所有的，分給窮人……你還要來跟從我。」</span>他聽見這話，臉上就變了色，憂憂愁愁的走了，因為他的產業很多。",
+                story: "「還缺少一件」，往往是最關鍵的那一件。這個年輕財主無法放下財富這個偶像。那個你緊抓不放、不願交給神的東西，就是阻礙你得著豐盛生命的障礙。耶穌挑戰我們，是要我們鬆開抓著次好東西的手，好承接那上好的福分。",
+                reflection: [
+                    "在你的生命中，哪「一件」是你最難交給神的？",
+                    "你是否相信，放下手中緊抓的，神會賜給你更豐盛的生命？"
+                ],
+                prayer: "主啊，光照我生命中是否還有那「保留的一件」。求祢賜我信心，勝過對物質的依賴，讓祢成為我生命中唯一的至寶。阿們。"
+            },
+            {
+                day: 23,
+                title: "僕人的領袖",
+                scripture_range: "馬可福音 10:43-45",
+                scripture_text: "只是在你們中間，不是這樣。你們中間，誰願為大，就必作你們的用人……<span class='highlight-verse'>「因為人子來，並不是要受人的服事，乃是要服事人，並且要捨命作多人的贖價。」</span>",
+                story: "世界看重掌權，耶穌看重服事。天國的金字塔是倒過來的。真正的偉大，不是看你有多少僕人，而是看你服務了多少人。耶穌貴為君王卻為門徒洗腳。如果想在屬靈生命上突破，試著從「服事身邊最小的一位」開始。",
+                reflection: [
+                    "你在家庭或職場中，是期待被人服事，還是主動服事人？",
+                    "本週你可以為身邊的人做一件什麼樣的「僕人行動」？"
+                ],
+                prayer: "主耶穌，祢是僕人的君王。求祢除去我爭競比較的心，讓我學習祢的樣式，在卑微的服事中，活出天國的偉大。阿們。"
+            },
+            {
+                day: 24,
+                title: "丟下衣服",
+                scripture_range: "馬可福音 10:49-50",
+                scripture_text: "耶穌停住腳步說：叫他過來。他們就叫那瞎子，對他說：放心，起來！他叫你啦。<span class='highlight-verse'>「瞎子就丟下衣服，跳起來，走到耶穌那裡。」</span>",
+                story: "那件「衣服」是瞎子唯一的財產與安全感。當耶穌呼喚時，他毫不猶豫地「丟下」了。這是一份破釜沈舟的信心。有時候我們求改變，卻還緊抓著舊有的安全感不放。主在呼喚你，你願意丟下什麼來回應祂？",
+                reflection: [
+                    "你有什麼「舊衣服」（習慣、罪、安全感）需要丟下才能走向耶穌？",
+                    "對於神的呼召，你是否願意像瞎子一樣立即回應？"
+                ],
+                prayer: "主啊，我有時緊抓著舊有的安全感不放。求祢賜我巴底買的信心，勇敢丟下過去的包袱，全然投奔祢的恩典。阿們。"
+            },
+            {
+                day: 25,
+                title: "禱告的殿",
+                scripture_range: "馬可福音 11:15-17",
+                scripture_text: "耶穌進入聖殿，趕出殿裡做買賣的人……<span class='highlight-verse'>「便教訓他們說：經上不是記著說：我的殿必稱為萬國禱告的殿嗎？你們倒使它成為賊窩了。」</span>",
+                story: "耶穌憤怒，因為人們把敬拜神的地方變成了牟利的市場。我們的心也是神的殿。現在充滿在你心裡的是什麼？是禱告，還是利益算計與焦慮？讓耶穌進來，潔淨心靈的聖殿，恢復它原本的功用——與神相交的所在。",
+                reflection: [
+                    "你的心靈聖殿現在充滿了什麼？是禱告還是焦慮？",
+                    "你願意邀請耶穌進來，潔淨你的心，趕出一切雜念嗎？"
+                ],
+                prayer: "主耶穌，求祢進入我的心，推翻一切佔據祢位置的偶像與雜念。潔淨我，使我的心重新成為禱告的殿，充滿祢的同在。阿們。"
+            },
+            {
+                day: 26,
+                title: "全部的奉獻",
+                scripture_range: "馬可福音 12:43-44",
+                scripture_text: "耶穌叫門徒來，說：我實在告訴你們，這窮寡婦投入庫裡的，比眾人所投的更多。<span class='highlight-verse'>「因為他們都是自己有餘，拿出來投在裡頭；但這寡婦是自己不足，把她一切養生的都投上了。」</span>",
+                story: "財主給的是「剩餘的」，寡婦給的是「全部的」。神不在乎數字大小，在乎的是我們對祂的信靠程度。寡婦敢把養生的都給出去，是因為她完全信靠神會養活她。這種完全的愛，比金山銀山更讓神感動。",
+                reflection: [
+                    "你的奉獻（金錢、時間）是「有餘才給」，還是「優先獻上」？",
+                    "這寡婦的信心給你什麼樣的提醒？"
+                ],
+                prayer: "主啊，教導我不在乎人眼中的價值，只在乎祢的看法。願我能像那寡婦，帶著完全信靠的心，將自己全然獻給祢。阿們。"
+            },
+            {
+                day: 27,
+                title: "警醒禱告",
+                scripture_range: "馬可福音 14:37-38",
+                scripture_text: "耶穌回來，見他們睡著了……<span class='highlight-verse'>「總要警醒禱告，免得入了迷惑。你們心靈固然願意，肉體卻軟弱了。」</span>",
+                story: "「心靈願意，肉體軟弱」是我們真實的寫照。耶穌給出的解藥不是「更努力」，而是「警醒禱告」。禱告是連結於神的能力，使軟弱的肉體能順服聖靈。當你覺得無力勝過試探時，不要硬撐，要跪下來，連結於那得勝的源頭。",
+                reflection: [
+                    "你最近是否在某些事上感到「心有餘而力不足」？",
+                    "當你軟弱時，你是選擇睡覺（逃避）還是選擇禱告（支取力量）？"
+                ],
+                prayer: "主啊，我知道我的肉體軟弱，常在試探中跌倒。求祢喚醒我的靈，使我保持警醒，藉著禱告支取勝過罪惡與試探的能力。阿們。"
+            },
+            {
+                day: 28,
+                title: "十字架的羞辱",
+                scripture_range: "馬可福音 15:19-20",
+                scripture_text: "<span class='highlight-verse'>「又拿一根葦子打祂的頭，吐唾沫在祂臉上，屈膝拜祂。」</span>戲弄完了，就給祂脫了紫袍，穿上自己的衣服，帶祂出去，要釘十字架。",
+                story: "榮耀君王任由受造物羞辱，祂擁有毀滅世界的能力，卻選擇了順服。祂忍受羞辱，好讓我們得榮耀；承受刑罰，好讓我們得平安。當我們受委屈時，看看十字架上的耶穌吧。真正的尊貴不是受人服事，而是為了愛甘願受苦。",
+                reflection: [
+                    "當你受到委屈或羞辱時，耶穌的榜樣如何安慰你？",
+                    "你是否願意為了福音的緣故，忍受一些不便或誤解？"
+                ],
+                prayer: "親愛的主，當我看見祢為我受的羞辱與鞭傷，我的心被恩感。謝謝祢為我走上十字架的道路，願我一生不忘這份厚愛，為主而活。阿們。"
+            },
+            {
+                day: 29,
+                title: "幔子裂開",
+                scripture_range: "馬可福音 15:37-38",
+                scripture_text: "耶穌大聲喊叫，氣就斷了。<span class='highlight-verse'>「殿裡的幔子從上到下裂為兩半。」</span>",
+                story: "耶穌斷氣時，象徵人神隔閡的幔子裂開了。通往神的道路已經被打通！因著耶穌的血，我們可以坦然無懼地來到施恩寶座前。無論你犯了什麼錯，只要奉耶穌的名，隨時可以回到天父懷抱。不要讓罪疚感再次縫合那幔子。",
+                reflection: [
+                    "你是否仍帶著罪疚感，覺得自己不配來到神面前？",
+                    "既然幔子已裂開，你今天要如何使用這特權來親近神？"
+                ],
+                prayer: "感謝主耶穌，祢用身體為我開了一條又新又活的路。我願放下罪疚與恐懼，坦然無懼地來到父神面前，享受與祢面對面的親密。阿們。"
+            },
+            {
+                day: 30,
+                title: "祂已經復活了",
+                scripture_range: "馬可福音 16:5-6",
+                scripture_text: "她們進了墳墓……<span class='highlight-verse'>「那少年人對她們說：不要驚恐！你們尋找那釘十字架的拿撒勒人耶穌，祂已經復活了，不在這裡。」</span>請看安放祂的地方。",
+                story: "天使宣告了驚天動地的消息：祂復活了！這代表死亡不是終局，失敗不是定局。因為耶穌活著，你生命中那些看似「已死」的盼望，都有復活的可能。我們敬拜的是活著的救主。帶著復活的盼望，勇敢地走出去吧！",
+                reflection: [
+                    "你生命中有什麼夢想或關係看似「死」了？你相信神能使它復活嗎？",
+                    "耶穌復活的真理，如何改變你面對明天的態度？"
+                ],
+                prayer: "哈利路亞！主耶穌祢已經復活了！這復活的大能也住在我裡面。求祢除去我一切的絕望，讓我帶著復活的盼望與能力，為祢作見證。阿們。"
+            }
+        ];
+
+        // App Logic
+        let currentDayIndex = 0;
+
+        function renderSidebar() {
+            const sidebar = document.getElementById('dayList');
+            sidebar.innerHTML = devotionals.map((devotional, index) => `
+                <div onclick="selectDay(${index})" 
+                     class="cursor-pointer p-4 border-b border-gray-50 hover:bg-gray-50 transition flex items-center gap-3 ${index === currentDayIndex ? 'active-day' : ''}">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full ${index === currentDayIndex ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'} flex items-center justify-center text-sm font-bold">
+                        ${devotional.day}
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-sm font-medium truncate">${devotional.title}</div>
+                        <div class="text-xs text-gray-400 truncate">${devotional.scripture_range}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderContent(index) {
+            const container = document.getElementById('devotionalContent');
+            const data = devotionals[index];
+
+            // Reset animation
+            container.classList.remove('fade-in');
+            void container.offsetWidth; // trigger reflow
+            container.classList.add('fade-in');
+
+            // Generate Reflection HTML
+            const reflectionHtml = data.reflection.map(q => `<li class="mb-2">${q}</li>`).join('');
+
+            container.innerHTML = `
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Day ${data.day}</span>
+                    <span class="text-gray-500 text-sm font-medium">${data.scripture_range}</span>
+                </div>
+                
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 serif">${data.title}</h2>
+                
+                <div class="bg-gray-50 border-l-4 border-green-500 p-4 mb-8 text-gray-700 leading-relaxed rounded-r">
+                    ${data.scripture_text}
+                </div>
+                
+                <div class="story-content text-gray-700 text-lg mb-8">
+                    ${data.story.replace(/\n/g, '<br>')}
+                </div>
+
+                 <div class="bg-amber-50 p-6 rounded-xl border border-amber-100 mb-6">
+                    <h3 class="text-amber-800 font-bold mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        深度默想
+                    </h3>
+                    <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                        ${reflectionHtml}
+                    </ul>
+                </div>
+                
+                <div class="bg-green-50 p-6 rounded-xl border border-green-100">
+                    <h3 class="text-green-800 font-bold mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        回應禱告
+                    </h3>
+                    <p class="text-gray-700 italic">
+                        ${data.prayer}
+                    </p>
+                </div>
+            `;
+
+            // Update buttons state
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === devotionals.length - 1;
+            
+            // Scroll to top of content
+            document.getElementById('contentContainer').scrollTop = 0;
+        }
+
+        function selectDay(index) {
+            currentDayIndex = index;
+            renderSidebar();
+            renderContent(index);
+            // Close sidebar on mobile after selection
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+
+        // Mobile Menu Logic
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        let isSidebarOpen = false;
+
+        function toggleSidebar() {
+            isSidebarOpen = !isSidebarOpen;
+            if (isSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('menuBtn').addEventListener('click', toggleSidebar);
+        document.getElementById('overlay').addEventListener('click', toggleSidebar);
+        
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentDayIndex > 0) selectDay(currentDayIndex - 1);
+        });
+        
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentDayIndex < devotionals.length - 1) selectDay(currentDayIndex + 1);
+        });
+
+        // Initialize
+        renderSidebar();
+        renderContent(0);
+
+    </script>
+</body>
+</html>
